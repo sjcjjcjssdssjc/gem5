@@ -56,3 +56,10 @@ Devices are simulated
 
 Main differences from SE mode
 There are a number of differences between syscall emulation mode and full system mode. The most important is that in full system mode it is much harder to fake things. For instance, in full system mode, as a user, you have to provide a compiled Linux kernel and a disk image. Then, to run applications in gem5, you have to boot the operating system, then you can interact as if it is a running computer.
+
+
+These ports implement three different memory system modes: timing, atomic, and functional. The most important mode is timing mode. Timing mode is the only mode that produces correct simulation results. The other modes are only used in special circumstances.
+
+Atomic mode is useful for fastforwarding simulation to a region of interest and warming up the simulator. This mode assumes that no events will be generated in the memory system. Instead, all of the memory requests execute through a single long callchain. It is not required to implement atomic accesses for a memory object unless it will be used during fastforward or during simulator warmup.
+
+Functional mode is better described as debugging mode. Functional mode is used for things like reading data from the host into the simulator memory. It is used heavily in syscall emulation mode. For instance, functional mode is used to load the binary in the process.cmd from the host into the simulated system’s memory so the simulated system can access it. Functional accesses should return the most up-to-date data on a read, no matter where the data is, and should update all possible valid data on a write (e.g., in a system with caches there may be multiple valid cache blocks with the same address).

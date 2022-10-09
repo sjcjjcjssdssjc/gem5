@@ -1,5 +1,12 @@
 Import('*')
 
-SimObject('HelloObject.py', sim_objects=['HelloObject'])
+SimObject('HelloObject.py', sim_objects = ['HelloObject','GoodbyeObject'])
+SimObject('SimpleMemobj.py', sim_objects = ['SimpleMemobj'])
+
 Source('hello_object.cc')
+Source('goodbye_object.cc')
+Source('simple_memobj.cc')
+
 DebugFlag('HelloExample')
+DebugFlag('SimpleMemobj')
+DebugFlag('Hello')
