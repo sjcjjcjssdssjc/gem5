@@ -39,6 +39,7 @@ IMPORTANT: If you modify this file, it's likely that the Learning gem5 book
 import m5
 # import all of the SimObjects
 from m5.objects import *
+from m5.objects.RiscvCPU import RiscvO3CPU
 
 # create the system we are going to simulate
 system = System()
@@ -53,15 +54,17 @@ system.mem_mode = 'timing'               # Use timing accesses
 system.mem_ranges = [AddrRange('512MB')] # Create an address range
 
 # Create a simple CPU
-system.cpu = TimingSimpleCPU()
+system.cpu = RiscvO3CPU()
+
+system.memobj = SimpleMemobj()
+
+# Hook the CPU ports up to the membus
+system.cpu.icache_port = system.memobj.inst_port
+system.cpu.dcache_port = system.memobj.data_port
 
 # Create a memory bus, a system crossbar, in this case
 system.membus = SystemXBar()
-
-# Hook the CPU ports up to the membus
-system.cpu.icache_port = system.membus.cpu_side_ports
-system.cpu.dcache_port = system.membus.cpu_side_ports
-
+system.memobj.mem_side = system.membus.slave
 # create the interrupt controller for the CPU and connect to the membus
 system.cpu.createInterruptController()
 

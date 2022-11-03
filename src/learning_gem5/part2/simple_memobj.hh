@@ -1,6 +1,7 @@
 #ifndef __LEARNING_GEM5_PART2_SIMPLE_MEMOBJ_HH__
 #define __LEARNING_GEM5_PART2_SIMPLE_MEMOBJ_HH__
 
+#include "base/statistics.hh"
 #include "mem/port.hh"
 #include "params/SimpleMemobj.hh"
 #include "sim/sim_object.hh"

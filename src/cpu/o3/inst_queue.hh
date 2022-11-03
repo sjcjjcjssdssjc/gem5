@@ -534,6 +534,13 @@ class InstructionQueue
         /** Stat for total number issued for each instruction type. */
         statistics::Vector2d statIssuedInstType;
 
+        statistics::Vector statIssuedLoadCount;
+
+        statistics::Scalar totalloads;
+        statistics::Scalar totalstores;
+        statistics::Formula loadRatio;
+        statistics::Formula storeRatio;
+
         /** Number of instructions issued per cycle. */
         statistics::Formula issueRate;
 
