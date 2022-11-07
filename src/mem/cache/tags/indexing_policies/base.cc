@@ -101,4 +101,16 @@ BaseIndexingPolicy::extractTag(const Addr addr) const
     return (addr >> tagShift);
 }
 
+int
+BaseIndexingPolicy::gettagShift()const
+{
+    return tagShift;
+}
+
+int
+BaseIndexingPolicy::getsetShift()const
+{
+    return setShift;
+}
+
 } // namespace gem5

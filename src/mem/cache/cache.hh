@@ -53,6 +53,7 @@
 #include "base/types.hh"
 #include "mem/cache/base.hh"
 #include "mem/packet.hh"
+#include "sim/sim_exit.hh"
 
 namespace gem5
 {
@@ -71,6 +72,8 @@ class Cache : public BaseCache
      * This cache should allocate a block on a line-sized write miss.
      */
     const bool doFastWrites;
+
+    void processdumpEvent();
 
     /**
      * Store the outstanding requests that we are expecting snoop
