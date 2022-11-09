@@ -77,7 +77,7 @@ BaseTags::findBlockBySetAndWay(int set, int way) const
 }
 
 Addr
-BaseTags::findAddrBySetAndTag(int set, int tag) const
+BaseTags::findAddrBySetAndTag(unsigned set, unsigned tag) const
 {
     return (tag << indexingPolicy->gettagShift())
         | (set << indexingPolicy->getsetShift());

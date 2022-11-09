@@ -211,7 +211,7 @@ class BaseTags : public ClockedObject
      */
     virtual ReplaceableEntry* findBlockBySetAndWay(int set, int way) const;
 
-    virtual Addr findAddrBySetAndTag(int set, int tag) const;
+    virtual Addr findAddrBySetAndTag(unsigned set, unsigned tag) const;
 
     void insertIntoSetMap(Addr set) {
         set_index_count[set]++;
