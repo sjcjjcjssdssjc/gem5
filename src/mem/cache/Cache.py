@@ -156,6 +156,7 @@ class Cache(BaseCache):
     type = 'Cache'
     cxx_header = 'mem/cache/cache.hh'
     cxx_class = 'gem5::Cache'
+    dump_cache = Param.Int(0, "Dump cache information during exit.")
 
 class NoncoherentCache(BaseCache):
     type = 'NoncoherentCache'

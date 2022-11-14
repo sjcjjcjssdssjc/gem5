@@ -173,6 +173,9 @@ class Cache : public BaseCache
      * @return True if the port is waiting for a retry
      */
     bool sendMSHRQueuePacket(MSHR* mshr) override;
+
+  private:
+    int dump_cache;
 };
 
 } // namespace gem5

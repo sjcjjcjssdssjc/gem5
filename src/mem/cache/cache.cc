@@ -70,11 +70,17 @@ namespace gem5
 
 Cache::Cache(const CacheParams &p)
     : BaseCache(p, p.system->cacheLineSize()),
-      doFastWrites(true)
+      doFastWrites(true),
+      dump_cache(p.dump_cache)
 {
     assert(p.tags);
     assert(p.replacement_policy);
-    registerExitCallback([this]() { processdumpEvent(); });
+    registerExitCallback([this]()
+    {
+        if (dump_cache) {
+            processdumpEvent();
+        }
+    });
 }
 
 void
