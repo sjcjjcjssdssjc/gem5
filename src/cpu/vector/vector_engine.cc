@@ -1,7 +1,15 @@
-bool
-VectorEngine::VectorMemPort::startTranslation(Addr addr, uint8_t *data,
+VectorEngine::VectorMemPort::VectorMemPort(const std::string& name, VectorEngine& owner,
+            uint8_t channels) :
+            MasterPort(name, owner), owner(owner)
+{
+    for(uint8_t i = 0; i < channels; i++) {
+        lsq.push_back(std::deque<PacketPtr>());
+    }
+}
+
+bool VectorEngine::VectorMemPort::startTranslation(Addr addr, uint8_t *data,
     uint64_t size, BaseTLB::Mode mode, ThreadContext *tc, uint64_t req_id,
-    uint8_t channel)
+    uint8_t channel)//sendTimingReadorWriteReq
 {
     Process *p = tc->getProcessPtr();
     Addr addra = p->pTable->pageAlign(addr);
@@ -31,7 +39,16 @@ VectorEngine::VectorMemPort::startTranslation(Addr addr, uint8_t *data,
         PacketPtr pkt = new VectorPacket(req, cmd, req_id, channel);
         //reqid and channel is new
         pkt->dataDynamic(ndata);
-        
 
+        if(!sendTimingReq(pkt)) {
+            lsq[channel].push_back(pkt);
+        }
+
+        delete translaion;
+        return true;
+    } else {
+        translaion->fault->invoke(tc, NULL);
+        delete translaion;
+        return false;
     }
 }
