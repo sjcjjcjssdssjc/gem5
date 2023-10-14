@@ -211,6 +211,16 @@ InstructionQueue::IQStats::IQStats(CPU *cpu, const unsigned &total_width)
              "attempts to use FU when none available"),
     ADD_STAT(statIssuedInstType, statistics::units::Count::get(),
              "Number of instructions issued per FU type, per thread"),
+    ADD_STAT(statIssuedLoadCount, statistics::units::Count::get(),
+             "Distribution of Numof load insts issued in one cycle"),
+    ADD_STAT(totalloads, statistics::units::Count::get(), "Number of loads"),
+    ADD_STAT(totalstores, statistics::units::Count::get(), "Number of stores"),
+    ADD_STAT(loadRatio, statistics::units::Ratio::get(),
+               "Ratio of loads to the total access to mem",
+               totalloads / (totalloads + totalstores)),
+    ADD_STAT(storeRatio, statistics::units::Ratio::get(),
+               "Ratio of stores to the total access to mem",
+               totalstores / (totalloads + totalstores)),
     ADD_STAT(issueRate, statistics::units::Rate<
                 statistics::units::Count, statistics::units::Cycle>::get(),
              "Inst issue rate", instsIssued / cpu->baseStats.numCycles),
@@ -285,6 +295,10 @@ InstructionQueue::IQStats::IQStats(CPU *cpu, const unsigned &total_width)
         .flags(statistics::total | statistics::pdf | statistics::dist)
         ;
     statIssuedInstType.ysubnames(enums::OpClassStrings);
+    statIssuedLoadCount
+        .init(total_width)
+        .flags(statistics::pdf)
+        ;
 
     //
     //  How long did instructions for a particular FU type wait prior to issue
@@ -775,7 +789,8 @@ InstructionQueue::scheduleReadyInsts()
     // This will avoid trying to schedule a certain op class if there are no
     // FUs that handle it.
     int total_issued = 0;
-    ListOrderIt order_it = listOrder.begin();
+    int issued_load  = 0;
+    ListOrderIt order_it = listOrder.begin();//one-dimentional
     ListOrderIt order_end_it = listOrder.end();
 
     while (total_issued < totalWidth && order_it != order_end_it) {
@@ -834,6 +849,12 @@ InstructionQueue::scheduleReadyInsts()
         // If we have an instruction that doesn't require a FU, or a
         // valid FU, then schedule for execution.
         if (idx != FUPool::NoFreeFU) {
+            if (issuing_inst->isLoad()) {
+                issued_load++;
+                iqStats.totalloads++;
+            } else if (issuing_inst->isStore()) {
+                iqStats.totalstores++;
+            }
             if (op_latency == Cycles(1)) {
                 i2e_info->size++;
                 instsToExecute.push_back(issuing_inst);
@@ -909,7 +930,7 @@ InstructionQueue::scheduleReadyInsts()
 
     iqStats.numIssuedDist.sample(total_issued);
     iqStats.instsIssued+= total_issued;
-
+    iqStats.statIssuedLoadCount[issued_load]++;
     // If we issued any instructions, tell the CPU we had activity.
     // @todo If the way deferred memory instructions are handeled due to
     // translation changes then the deferredMemInsts condition should be

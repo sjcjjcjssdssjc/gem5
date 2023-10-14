@@ -1,0 +1,22 @@
+Way to add inst:
+** in decode.isa first decode 0:1 then 2:6 in opcode!
+funct7 is 31:25
+
+include vector.isa in formats.isa
+
+add format(opClass) in arch/riscv/isa/formats/vector.isa
+add opClass name in src/cpu/FuncUnit.py, src/cpu/op_class.hh
+(const char* mnem, MachInst machInst, OpClass opClass)
+
+add decode sector(a~b is what) in src/arch/riscv/insts/...
+
+add VFUNCT6 in bitfields.isa and use it in decoder.isa
+add operation in arch/riscv/isa/decoder.isa
+
+where binary machine code(010101) is decoded
+
+
+to define opClass::mnem which is the final function name
+
+
+instqueue->issue(VectorLane::issue is for registers)->mem_queue

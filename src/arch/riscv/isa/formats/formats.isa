@@ -41,6 +41,8 @@
 // Include formats for nonstandard extensions
 ##include "compressed.isa"
 
+##include "vector.isa"
+
 // Pseudo operations
 ##include "m5ops.isa"
 

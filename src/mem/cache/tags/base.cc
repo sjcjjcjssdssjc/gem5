@@ -76,6 +76,13 @@ BaseTags::findBlockBySetAndWay(int set, int way) const
     return indexingPolicy->getEntry(set, way);
 }
 
+Addr
+BaseTags::findAddrBySetAndTag(unsigned set, unsigned tag) const
+{
+    return (tag << indexingPolicy->gettagShift())
+        | (set << indexingPolicy->getsetShift());
+}
+
 CacheBlk*
 BaseTags::findBlock(Addr addr, bool is_secure) const
 {

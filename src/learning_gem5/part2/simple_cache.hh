@@ -283,7 +283,7 @@ class SimpleCache : public ClockedObject
 
     /// Packet that we are currently handling. Used for upgrading to larger
     /// cache line sizes
-    PacketPtr originalPacket;
+    PacketPtr outstandingPacket;
 
     /// The port to send the response when we recieve it back
     int waitingPortId;
@@ -294,7 +294,6 @@ class SimpleCache : public ClockedObject
     /// An incredibly simple cache storage. Maps block addresses to data
     std::unordered_map<Addr, uint8_t*> cacheStore;
 
-    /// Cache statistics
   protected:
     struct SimpleCacheStats : public statistics::Group
     {
@@ -303,8 +302,9 @@ class SimpleCache : public ClockedObject
         statistics::Scalar misses;
         statistics::Histogram missLatency;
         statistics::Formula hitRatio;
+        //combination of other statistics (the number of hits and misses)
     } stats;
-
+    /// Cache statistics
   public:
 
     /** constructor

@@ -49,7 +49,9 @@
 #include <cassert>
 #include <cstdint>
 #include <functional>
+#include <map>
 #include <string>
+#include <utility>
 
 #include "base/callback.hh"
 #include "base/logging.hh"
@@ -73,6 +75,8 @@ class ReplaceableEntry;
 class BaseTags : public ClockedObject
 {
   protected:
+    std::map<Addr, int>set_index_count;
+
     /** The block size of the cache. */
     const unsigned blkSize;
     /** Mask out all bits that aren't part of the block offset. */
@@ -206,6 +210,17 @@ class BaseTags : public ClockedObject
      * @return The block.
      */
     virtual ReplaceableEntry* findBlockBySetAndWay(int set, int way) const;
+
+    virtual Addr findAddrBySetAndTag(unsigned set, unsigned tag) const;
+
+    void insertIntoSetMap(Addr set) {
+        set_index_count[set]++;
+    }
+
+    std::map<Addr, int>& getSetMap()
+    {
+        return set_index_count;
+    }
 
     /**
      * Align an address to the block size.

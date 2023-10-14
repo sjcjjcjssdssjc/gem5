@@ -2025,6 +2025,18 @@ decode QUADRANT default Unknown::unknown() {
             }
         }
 
+        0x15: decode VFUNCT6 {
+            0x0: decode FUNCT3 {
+                0x0: VectorArith2SrcOp::vadd_vv();
+                0x1: VectorArith2SrcOp::vfadd_vv();
+                0x2: VectorReductionOp::vredsum_vs();
+                0x3: VectorArith2SrcOp::vadd_vi();
+                0x4: VectorArith2SrcOp::vadd_vx();
+                0x5: VectorArith2SrcOp::vfadd_vf();
+                //one missing
+            }
+        }
+
         0x18: decode FUNCT3 {
             format BOp {
                 0x0: beq({{

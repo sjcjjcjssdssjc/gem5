@@ -47,6 +47,8 @@
 #include "mem/cache/cache.hh"
 
 #include <cassert>
+#include <map>
+#include <utility>
 
 #include "base/compiler.hh"
 #include "base/logging.hh"
@@ -68,10 +70,17 @@ namespace gem5
 
 Cache::Cache(const CacheParams &p)
     : BaseCache(p, p.system->cacheLineSize()),
-      doFastWrites(true)
+      doFastWrites(true),
+      dump_cache(p.dump_cache)
 {
     assert(p.tags);
     assert(p.replacement_policy);
+    registerExitCallback([this]()
+    {
+        if (dump_cache) {
+            processdumpEvent();
+        }
+    });
 }
 
 void
@@ -151,6 +160,41 @@ Cache::satisfyRequest(PacketPtr pkt, CacheBlk *blk,
     }
 }
 
+void
+Cache::processdumpEvent()
+{
+    std::size_t blk_size_bits = blkSize*8;//64
+    tags->forEachBlk([this](CacheBlk &blk) {
+        Addr set = blk.getSet();
+        tags->insertIntoSetMap(set);
+    });
+    std::map<Addr, int> &set_index_count = tags->getSetMap();
+    for (auto &entry: set_index_count) {
+        Addr set_index = entry.first;
+        int cnt = entry.second;
+        // Find replacement victim
+        std::vector<CacheBlk*> evict_blks;
+        for (int priority = 0; priority < cnt; priority++) {
+            Addr addr = tags->findAddrBySetAndTag(set_index, 0);
+            CacheBlk *victim = tags->findVictim(addr, 1, blk_size_bits,
+                                                evict_blks);
+            Addr victim_set  = victim->getSet();
+            Addr victim_tag  = victim->getTag();
+            Addr victim_addr =
+            tags->findAddrBySetAndTag(victim_set, victim_tag);
+            printf("addr:%lx set index: %x valid? %x data:\n",
+                victim_addr, victim->getSet(), victim->isValid());
+            for (int i = blkSize - 1; i >= 0; i--) {
+                Addr addr_internal = addr + i;
+                printf("%x", victim->data[addr_internal]);
+            }
+            printf("\n");
+            if (victim && victim->isValid()) {
+                evictBlock(victim);
+            }
+        }
+    }
+}
 /////////////////////////////////////////////////////
 //
 // Access path: requests coming in from the CPU side
