@@ -282,6 +282,7 @@ StoreSet::issued(Addr issued_PC, InstSeqNum issued_seq_num, bool is_store)
         return;
     }
 
+    // take the middle
     int index = calcIndex(issued_PC);
 
     int store_SSID;

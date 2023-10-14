@@ -683,6 +683,7 @@ InstructionQueue::addToOrderList(OpClass op_class)
 
     queue_entry.queueType = op_class;
 
+    // queue's front
     queue_entry.oldestInst = readyInsts[op_class].top()->seqNum;
 
     ListOrderIt list_it = listOrder.begin();
@@ -721,7 +722,6 @@ InstructionQueue::moveToYoungerInst(ListOrderIt list_order_it)
            (*next_it).oldestInst < queue_entry.oldestInst) {
         ++next_it;
     }
-
     readyIt[op_class] = listOrder.insert(next_it, queue_entry);
 }
 
@@ -801,6 +801,7 @@ InstructionQueue::scheduleReadyInsts()
             if (!readyInsts[op_class].empty()) {
                 moveToYoungerInst(order_it);
             } else {
+                // iterator of listorder
                 readyIt[op_class] = listOrder.end();
                 queueOnList[op_class] = false;
             }
@@ -869,8 +870,10 @@ InstructionQueue::scheduleReadyInsts()
             readyInsts[op_class].pop();
 
             if (!readyInsts[op_class].empty()) {
+                // list order move
                 moveToYoungerInst(order_it);
             } else {
+                // iterator of listorder
                 readyIt[op_class] = listOrder.end();
                 queueOnList[op_class] = false;
             }

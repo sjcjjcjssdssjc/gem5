@@ -1331,6 +1331,7 @@ LSQUnit::read(LSQRequest *request, ssize_t load_idx)
 
     if (request->mainReq()->isStrictlyOrdered() &&
         (load_idx != loadQueue.head() || !load_inst->isAtCommit())) {
+        // toread
         // Tell IQ/mem dep unit that this instruction will need to be
         // rescheduled eventually
         iewStage->rescheduleMemInst(load_inst);
